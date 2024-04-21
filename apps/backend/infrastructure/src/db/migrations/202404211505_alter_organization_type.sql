@@ -1,0 +1,1 @@
+ALTER TABLE organization RENAME COLUMN type TO organization_type;

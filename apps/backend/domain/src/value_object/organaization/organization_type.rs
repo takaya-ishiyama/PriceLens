@@ -1,0 +1,4 @@
+pub enum ORGANIZATION_TYPE {
+    PUBLIC,
+    PRIVATE,
+}

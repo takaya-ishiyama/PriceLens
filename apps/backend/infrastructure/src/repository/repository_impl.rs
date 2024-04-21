@@ -15,7 +15,6 @@ pub(crate) struct RepositoryImpls {
 }
 
 impl Repositories for RepositoryImpls {
-    type UserRepo = UserRepositoryImpl;
     type SessionRepo = SessionRepositoryImpl;
 
     fn new(db: Arc<Pool<Postgres>>) -> Self {
@@ -25,10 +24,6 @@ impl Repositories for RepositoryImpls {
             user_repo: UserRepositoryImpl::new(db.clone()),
             session_repo: SessionRepositoryImpl::new(db.clone()),
         }
-    }
-
-    fn user_repo(&self) -> &Self::UserRepo {
-        &self.user_repo
     }
 
     fn session_repo(&self) -> &Self::SessionRepo {
