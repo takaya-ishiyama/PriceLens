@@ -1,32 +1,27 @@
 use std::sync::Arc;
 
 use domain::infrastructure::interface::repository::{
-    repository_interface::Repositories, session_repository_interface::SessionRepository,
-    user_repository_interface::UserRepository,
+    organization_repository_interface::OrganizationRepository, repository_interface::Repositories,
 };
 use sqlx::{Pool, Postgres};
 
-use super::{session_repository::SessionRepositoryImpl, user_repository::UserRepositoryImpl};
+use super::organization_repository::OrganizationRepositoryImpl;
 
 #[derive(Clone, Debug)]
 pub(crate) struct RepositoryImpls {
-    user_repo: UserRepositoryImpl,
-    session_repo: SessionRepositoryImpl,
+    organization_repo: OrganizationRepositoryImpl,
 }
 
 impl Repositories for RepositoryImpls {
-    type SessionRepo = SessionRepositoryImpl;
+    type OrganizationRepo = OrganizationRepositoryImpl;
 
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self {
-            // FIXME: 参照を渡すようにする。できればコネクションを渡すようにする。
-            // arcを渡すとcloneされるたびにコネクションが増えていく。コネクションが増えるだけなので問題ない可能性もある
-            user_repo: UserRepositoryImpl::new(db.clone()),
-            session_repo: SessionRepositoryImpl::new(db.clone()),
+            organization_repo: OrganizationRepositoryImpl::new(db.clone()),
         }
     }
 
-    fn session_repo(&self) -> &Self::SessionRepo {
-        &self.session_repo
+    fn organization_repo(&self) -> &Self::OrganizationRepo {
+        &self.organization_repo
     }
 }

@@ -1,6 +1,10 @@
-use async_graphql::SimpleObject;
-use domain::value_object::organaization::organization_type::ORGANIZATION_TYPE;
+use async_graphql::{Enum, SimpleObject};
 
+#[derive(Enum, Copy, Clone, Eq, PartialEq)]
+pub enum ORGANIZATION_TYPE {
+    PUBLIC,
+    PRIVATE,
+}
 #[derive(SimpleObject)]
 pub struct OrganizationSchema {
     id: String,
@@ -8,7 +12,7 @@ pub struct OrganizationSchema {
     organization_type: ORGANIZATION_TYPE,
 }
 
-pub impl OrganizationSchema {
+impl OrganizationSchema {
     pub fn new(id: String, name: String, organization_type: ORGANIZATION_TYPE) -> Self {
         Self {
             id,

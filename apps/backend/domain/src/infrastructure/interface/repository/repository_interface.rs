@@ -4,18 +4,12 @@ use async_trait::async_trait;
 use mockall::automock;
 use sqlx::{Pool, Postgres};
 
-use super::session_repository_interface::SessionRepository;
+use super::organization_repository_interface::OrganizationRepository;
 
 #[async_trait]
 pub trait Repositories {
-    type SessionRepo: SessionRepository;
+    type OrganizationRepo: OrganizationRepository;
 
     fn new(db: Arc<Pool<Postgres>>) -> Self;
-    fn session_repo(&self) -> &Self::SessionRepo;
-}
-
-pub trait TestRepositories {
-    type SessionRepo: SessionRepository;
-
-    fn session_repo(&self) -> &Self::SessionRepo;
+    fn organization_repo(&self) -> &Self::OrganizationRepo;
 }

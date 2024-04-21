@@ -2,15 +2,14 @@ mod config;
 mod db;
 mod graphql;
 mod repository;
-mod test;
 
 use std::fs::File;
 use std::io::prelude::*;
 use std::net::SocketAddr;
 
 use async_graphql::http::GraphQLPlaygroundConfig;
+use async_graphql::EmptyMutation;
 use async_graphql::{http::playground_source, EmptySubscription, Request, Response, Schema};
-use graphql::mutation::Mutation;
 use graphql::query::{Query, Token};
 
 use axum::extract::{Json, State};
@@ -31,10 +30,10 @@ async fn main() {
             .allow_methods(vec![Method::GET, Method::POST])
             .allow_origin(Any);
 
-        let schema = Schema::build(Query, Mutation, EmptySubscription)
+        let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
             .data(DB::new().await)
             .finish();
-        export_gql_schema(&schema);
+        // export_gql_schema(&schema);
 
         let app = Router::new()
             .route("/", get(graphql_playground).post(graphql_handler))
@@ -60,7 +59,7 @@ fn get_token_from_headers(headers: &HeaderMap) -> Option<Token> {
 }
 
 async fn graphql_handler(
-    schema: Extension<Schema<Query, Mutation, EmptySubscription>>,
+    schema: Extension<Schema<Query, EmptyMutation, EmptySubscription>>,
     headers: HeaderMap,
     req: Json<Request>,
 ) -> Json<Response> {
@@ -75,7 +74,7 @@ async fn graphql_playground() -> impl IntoResponse {
     Html(playground_source(GraphQLPlaygroundConfig::new("/")))
 }
 
-fn export_gql_schema(schema: &Schema<Query, Mutation, EmptySubscription>) {
+fn export_gql_schema(schema: &Schema<Query, EmptyMutation, EmptySubscription>) {
     let file_path = "graphql/schema.gql";
     let export_schema = schema.sdl();
 
@@ -93,7 +92,7 @@ mod tests {
         headers.insert("Authorization", "foo".parse().unwrap());
 
         let processed_handler = graphql_handler(
-            Extension(Schema::build(Query, Mutation, EmptySubscription).finish()),
+            Extension(Schema::build(Query, EmptyMutation, EmptySubscription).finish()),
             headers,
             Json(Request::new("".to_string())),
         );
