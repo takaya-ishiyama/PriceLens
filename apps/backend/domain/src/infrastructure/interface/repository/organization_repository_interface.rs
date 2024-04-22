@@ -29,8 +29,8 @@ pub trait OrganizationRepository {
     // async fn upsert(&self, Organization: &OrganizationUpdateInput) -> Result<Organization, String>;
 }
 
-pub struct OrganizationUpdateInput {
-    id: String,
-    name: String,
-    organization_type: ORGANIZATION_TYPE,
-}
+// pub struct OrganizationUpdateInput {
+//     id: String,
+//     name: String,
+//     organization_type: ORGANIZATION_TYPE,
+// }
