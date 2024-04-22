@@ -12,7 +12,12 @@ use crate::value_object::organaization::{
 #[async_trait]
 pub trait OrganizationRepository {
     fn new(db: Arc<Pool<Postgres>>) -> Self;
-    // async fn create(&self, user_id: &str) -> Result<Organization, String>;
+    async fn create<'a>(
+        &self,
+        name: &str,
+        organization_type: &ORGANIZATION_TYPE,
+        private_key: Option<&'a str>, // &strだとライフタイムだるい,
+    ) -> Result<Organization, String>;
     // async fn find_one(&self, id: &str) -> Result<Organization, String>;
     // async fn find_all_with_pagination(
     //     &self,
