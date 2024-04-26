@@ -91,10 +91,13 @@ mod tests {
 
     use sqlx::PgPool;
 
+    use crate::test::setup_testdb::setup_database;
+
     use super::*;
 
     #[sqlx::test]
     async fn test_create_true_response(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
         let db = Arc::new(pool);
         let repo = OrganizationRepositoryImpl::new(db);
 

@@ -2,6 +2,7 @@ mod config;
 mod db;
 mod graphql;
 mod repository;
+mod test;
 
 use std::fs::File;
 use std::io::prelude::*;
