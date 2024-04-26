@@ -21,12 +21,17 @@ impl<'r, R: Repositories> OrganizationInteractor<'r, R> {
     pub async fn create_organization(
         &self,
         name: &str,
-        organization_type: &ORGANIZATION_TYPE,
+        organization_type: &str,
         private_key: Option<&'r str>,
     ) -> Result<Organization, String> {
+        let _organization_type = match organization_type {
+            "PUBLIC" => ORGANIZATION_TYPE::PUBLIC,
+            "PRIVATE" => ORGANIZATION_TYPE::PRIVATE,
+            _ => return Err("Invalid organization type".to_string()),
+        };
         let organization = self
             .organization_repo
-            .create(name, organization_type, private_key)
+            .create(name, &_organization_type, private_key)
             .await?;
         Ok(organization)
     }

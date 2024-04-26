@@ -24,16 +24,10 @@ impl Mutation {
         let repo = RepositoryImpls::new(db);
         let ognz_usecase = OrganizationInteractor::new(&repo);
 
-        let _organization_type = match organization_type.as_str() {
-            "PUBLIC" => organization_type::ORGANIZATION_TYPE::PUBLIC,
-            "PRIVATE" => organization_type::ORGANIZATION_TYPE::PRIVATE,
-            _ => return Err("Invalid organization type".to_string()),
-        };
-
         let _private_key: Option<&str> = private_key.as_ref().map(|s| s.as_str());
 
         let create_ognz = ognz_usecase
-            .create_organization(&name, &_organization_type, _private_key)
+            .create_organization(&name, &organization_type, _private_key)
             .await
             .unwrap();
 
