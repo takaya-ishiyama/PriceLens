@@ -7,7 +7,7 @@ use usecase::organization::usecase::OrganizationInteractor;
 
 use crate::{db::persistence::postgres::DB, repository::repository_impl::RepositoryImpls};
 
-use super::schema::organization::OrganizationSchema;
+use super::schema::organization::{OrganizationSchema, ORGANIZATION_TYPE};
 
 pub struct Mutation;
 
@@ -27,6 +27,7 @@ impl Mutation {
         let _organization_type = match organization_type.as_str() {
             "PUBLIC" => organization_type::ORGANIZATION_TYPE::PUBLIC,
             "PRIVATE" => organization_type::ORGANIZATION_TYPE::PRIVATE,
+            _ => return Err("Invalid organization type".to_string()),
         };
 
         let _private_key: Option<&str> = private_key.as_ref().map(|s| s.as_str());
@@ -37,10 +38,14 @@ impl Mutation {
             .unwrap();
 
         let ognz_params = create_ognz.get_params();
+        let resp_ognz_type = match ognz_params.organization_type {
+            organization_type::ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
+            organization_type::ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
+        };
         Ok(OrganizationSchema::new(
             ognz_params.id,
             ognz_params.name,
-            ognz_params.organization_type,
+            resp_ognz_type,
         ))
     }
 }
