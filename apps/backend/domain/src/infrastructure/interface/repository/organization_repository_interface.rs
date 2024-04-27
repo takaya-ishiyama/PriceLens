@@ -16,13 +16,20 @@ pub trait OrganizationRepository {
         &self,
         name: &str,
         organization_type: &ORGANIZATION_TYPE,
-        private_key: Option<&'a str>, // &strだとライフタイムだるい,
+        private_key: Option<&'a str>,
     ) -> Result<Organization, String>;
-    // async fn find_one(&self, id: &str) -> Result<Organization, String>;
+    async fn find_one_by_id(&self, id: &str) -> Result<Organization, String>;
+    /* async fn find_many_by_name_with_pagination(
+        &self,
+        name: &str,
+        limit: &i32,
+        offset: &i32,
+    )  -> Result<Vec<Organization>, String>;
+    */
     // async fn find_all_with_pagination(
     //     &self,
-    //     limit: i32,
-    //     offset: i32,
+    //     limit: &i32,
+    //     offset: &i32,
     // ) -> Result<Vec<Organization>, String>;
     // async fn find_many(&self, user_id: &str) -> Result<Vec<Organization>, String>;
     // async fn update(&self, Organization: &OrganizationUpdateInput) -> Result<Organization, String>;

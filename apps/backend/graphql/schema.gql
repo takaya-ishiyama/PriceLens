@@ -32,6 +32,12 @@ enum OrganizationType {
 
 type Query {
 	currentToken: String
+	findOne(
+		"""
+		id of object
+		"""
+		id: String!
+	): OrganizationSchema!
 }
 
 

@@ -64,19 +64,57 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
 
         match organization {
             Ok(organization) => {
-                tx.commit().await.unwrap();
                 let tmp_organization_type = match organization.organization_type {
                     OrganizationType::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
                     OrganizationType::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
                 };
+
+                tx.commit().await.unwrap();
                 Ok(Organization::new(
-                    organization.id.to_string(),
-                    organization.name,
-                    tmp_organization_type,
-                    // ORGANIZATION_TYPE::PUBLIC,
-                    "".to_string(),
-                    "".to_string(),
-                    "".to_string(),
+                    &organization.id.to_string(),
+                    &organization.name,
+                    &tmp_organization_type,
+                    "",
+                    "",
+                    "",
+                ))
+            }
+            Err(e) => {
+                tx.rollback().await.unwrap();
+                Err(e.to_string())
+            }
+        }
+    }
+    async fn find_one_by_id(&self, id: &str) -> Result<Organization, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        let mut tx = conn.begin().await.unwrap();
+
+        let _id = Uuid::parse_str(id).unwrap();
+
+        let organization = sqlx::query_as!(
+            CreatedOrganization,
+            r#"SELECT id,name,organization_type AS "organization_type!: OrganizationType",created_at,updated_at FROM organization WHERE id = $1"#,
+            _id
+        )
+        .fetch_one(&mut *tx)
+        .await;
+
+        match organization {
+            Ok(organization) => {
+                let tmp_organization_type = match organization.organization_type {
+                    OrganizationType::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
+                    OrganizationType::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
+                };
+
+                tx.commit().await.unwrap();
+                Ok(Organization::new(
+                    &organization.id.to_string(),
+                    &organization.name,
+                    &tmp_organization_type,
+                    "",
+                    "",
+                    "",
                 ))
             }
             Err(e) => {
@@ -86,12 +124,13 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
         }
     }
 }
+
 #[cfg(test)]
 mod tests {
 
     use sqlx::PgPool;
 
-    use crate::test::setup_testdb::setup_database;
+    use crate::test::{setup_testdb::setup_database, stb_data::stb_organization};
 
     use super::*;
 
@@ -110,22 +149,15 @@ mod tests {
     }
 
     // #[sqlx::test]
-    // async fn test_create_insert_to_db(pool: PgPool) -> sqlx::Result<()> {
+    // async fn test_find_one(pool: PgPool) -> sqlx::Result<()> {
+    //     setup_database(&pool).await;
+    //     let stb = stb_organization();
     //     let db = Arc::new(pool);
     //     let repo = OrganizationRepositoryImpl::new(db);
-    //     let conn = pool.acquire().await;
 
-    //     let ognz_type = ORGANIZATION_TYPE::PUBLIC;
-    //     let organization = repo.create("test", &ognz_type, Some("")).await.unwrap();
+    //     let organization = repo.find_one(&stb[0].get_params().id).await.unwrap();
 
-    //     let getognz = sqlx::query!(
-    //         "SELECT * FROM organization WHERE id = ?",
-    //         organization.get_params().id
-    //     )
-    //     .fetch_one(&mut pool)
-    //     .await?;
-
-    //     assert_eq!(organization.get_params().name, "test".to_string());
+    //     assert_eq!(organization.get_params().name, stb[0].get_params().id);
 
     //     Ok(())
     // }

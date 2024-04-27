@@ -35,4 +35,9 @@ impl<'r, R: Repositories> OrganizationInteractor<'r, R> {
             .await?;
         Ok(organization)
     }
+
+    pub async fn find_one_by_id(&self, id: &str) -> Result<Organization, String> {
+        let organization = self.organization_repo.find_one_by_id(id).await.unwrap();
+        Ok(organization)
+    }
 }

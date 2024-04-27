@@ -17,20 +17,20 @@ pub struct GetParams {
 
 impl Organization {
     pub fn new(
-        id: String,
-        name: String,
-        organization_type: ORGANIZATION_TYPE,
-        created_at: String,
-        updated_at: String,
-        deleted_at: String,
+        id: &str,
+        name: &str,
+        organization_type: &ORGANIZATION_TYPE,
+        created_at: &str,
+        updated_at: &str,
+        deleted_at: &str,
     ) -> Self {
         Self {
-            id,
-            name,
-            organization_type,
-            created_at,
-            updated_at,
-            deleted_at,
+            id: id.to_string(),
+            name: name.to_string(),
+            organization_type: organization_type.clone(),
+            created_at: created_at.to_string(),
+            updated_at: updated_at.to_string(),
+            deleted_at: deleted_at.to_string(),
         }
     }
 
