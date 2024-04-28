@@ -1,0 +1,7 @@
+query getOrganization($id: String!) {
+  findOne(id: $id) {
+    id
+    name
+    organizationType
+  }
+}
