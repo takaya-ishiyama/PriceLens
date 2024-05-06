@@ -1,4 +1,4 @@
-query getOrganization($id: String!) {
+query getOrganization($id: ID!) {
   findOne(id: $id) {
     id
     name

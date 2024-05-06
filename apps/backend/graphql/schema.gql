@@ -36,7 +36,7 @@ type Query {
 		"""
 		id of object
 		"""
-		id: String!
+		id: ID!
 	): OrganizationSchema!
 }
 

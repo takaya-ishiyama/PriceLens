@@ -20,7 +20,7 @@ impl Query {
     async fn find_one<'ctx>(
         &self,
         ctx: &Context<'ctx>,
-        #[graphql(desc = "id of object")] id: String,
+        #[graphql(desc = "id of object")] id: ID,
     ) -> Result<OrganizationSchema, String> {
         let db = ctx.data::<DB>().unwrap().0.clone();
         let repo = RepositoryImpls::new(db);
