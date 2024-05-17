@@ -9,6 +9,8 @@ import { client } from "app/infrastructure";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction } from "@remix-run/node";
 
+type OrganizationQuery = { organization: GetOrganizationQuery['findOne'] }
+
 export const loader: LoaderFunction = async ({ params }) => {
   if (params.id == null) return
   const requestOptions: RequestOptions<
@@ -20,7 +22,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   };
   try {
     const { findOne } = await client.request(requestOptions);
-    return { organization: findOne };
+    return { organization: findOne } as OrganizationQuery;
   } catch (e) {
     console.log('エラーはっせい！！')
     throw new Error((e as Error).message)
@@ -28,7 +30,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 const OrganizationScreen: React.FC = () => {
-  const { organization } = useLoaderData<{ organization: GetOrganizationQuery['findOne'] }>();
+  const { organization } = useLoaderData<OrganizationQuery>();
 
   return (
     <div>
