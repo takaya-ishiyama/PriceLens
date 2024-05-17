@@ -1,5 +1,5 @@
 import React from "react";
-import { RequestOptions, gql } from "graphql-request";
+import { RequestOptions } from "graphql-request";
 import {
   GetOrganizationQueryVariables,
   GetOrganizationQuery,
@@ -17,20 +17,27 @@ export const loader: LoaderFunction = async ({ params }) => {
   > = {
     document: GetOrganizationDocument,
     variables: { id: params.id },
-    // variables: { id: "5cda43e9-abfe-4ddd-800c-c1a8dedb4bcf" },
   };
-  const { findOne } = await client.request(requestOptions);
-  return { organization: findOne };
+  try {
+    const { findOne } = await client.request(requestOptions);
+    return { organization: findOne };
+  } catch (e) {
+    console.log('エラーはっせい！！')
+    throw new Error((e as Error).message)
+  }
 };
 
 const OrganizationScreen: React.FC = () => {
-  const { organization } = useLoaderData<typeof loader>();
-
-  console.log("\n-----------------------\n", organization);
+  const { organization } = useLoaderData<{ organization: GetOrganizationQuery['findOne'] }>();
 
   return (
     <div>
-      <div>aaaa</div>
+      <div>
+        {organization.name}
+      </div>
+      <div>
+        {organization.organizationType}
+      </div>
     </div>
   );
 };
