@@ -17,7 +17,7 @@ impl Query {
     async fn current_token<'a>(&self, ctx: &'a Context<'_>) -> Option<&'a str> {
         ctx.data_opt::<Token>().map(|token| token.0.as_str())
     }
-    async fn find_one<'ctx>(
+    async fn organization_find_one<'ctx>(
         &self,
         ctx: &Context<'ctx>,
         #[graphql(desc = "id of object")] id: ID,

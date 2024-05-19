@@ -200,7 +200,7 @@
             "deprecationReason": null
           },
           {
-            "name": "findOne",
+            "name": "organizationFindOne",
             "description": null,
             "args": [
               {

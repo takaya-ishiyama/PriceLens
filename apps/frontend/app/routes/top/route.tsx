@@ -4,7 +4,7 @@ import React from "react";
 
 const TopScreen = () => {
   const navigate = useNavigate();
-  const [organizationId, setOrganizationId] = React.useState<string | null>(
+  const [organizationId] = React.useState<string | null>(
     "5cda43e9-abfe-4ddd-800c-c1a8dedb4bcf",
   );
 

@@ -32,7 +32,7 @@ enum OrganizationType {
 
 type Query {
 	currentToken: String
-	findOne(
+	organizationFindOne(
 		"""
 		id of object
 		"""

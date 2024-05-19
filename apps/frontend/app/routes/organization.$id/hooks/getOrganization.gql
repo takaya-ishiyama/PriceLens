@@ -1,5 +1,5 @@
 query getOrganization($id: ID!) {
-  findOne(id: $id) {
+  organizationFindOne(id: $id) {
     id
     name
     organizationType
