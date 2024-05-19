@@ -3,10 +3,15 @@ import { RequestOptions } from "graphql-request";
 import { client } from "app/infrastructure";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction } from "@remix-run/node";
-import { GetOrganizationDocument, GetOrganizationQuery, GetOrganizationQueryVariables } from "app/infrastructer/graphql";
+import {
+  GetOrganizationDocument,
+  GetOrganizationQuery,
+  GetOrganizationQueryVariables,
+} from "app/infrastructer/graphql";
 
-
-type OrganizationQuery = { organization: GetOrganizationQuery["organizationFindOne"] };
+type OrganizationQuery = {
+  organization: GetOrganizationQuery["organizationFindOne"];
+};
 
 export const loader: LoaderFunction = async ({ params }) => {
   if (params.id == null) return;
