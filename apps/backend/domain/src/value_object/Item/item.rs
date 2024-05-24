@@ -8,6 +8,12 @@ pub struct Item {
     deleted_at: String,
 }
 
+pub struct GetParams {
+    pub id: String,
+    pub name: String,
+    pub organization_id: String,
+}
+
 impl Item {
     pub fn new(
         id: &str,
@@ -24,6 +30,14 @@ impl Item {
             created_at: created_at.to_string(),
             updated_at: updated_at.to_string(),
             deleted_at: deleted_at.to_string(),
+        }
+    }
+    /** @deprecated */
+    pub fn get_params(&self) -> GetParams {
+        GetParams {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            organization_id: self.organization_id.clone(),
         }
     }
 }

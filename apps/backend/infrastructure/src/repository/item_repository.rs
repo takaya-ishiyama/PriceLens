@@ -32,13 +32,15 @@ impl ItemRepository for ItemRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
     }
-    async fn create(&self, organization_id: &str, name: &str) -> Result<Item, String> {
+    async fn create(&self, name: &str, organization_id: &str) -> Result<Item, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
         let mut tx = conn.begin().await.unwrap();
 
-        //FIXME:ちゃんとエラー処理する
-        let organization_id_of_uuid = Uuid::parse_str(organization_id).unwrap();
+        let organization_id_of_uuid = match Uuid::parse_str(organization_id) {
+            Ok(uuid) => uuid,
+            Err(e) => return Err(format!("Invalid UUID: {}", e)),
+        };
 
         let created_item = sqlx::query_as!(
             CreatedItem,
@@ -107,8 +109,19 @@ mod tests {
 
     use super::*;
 
-    // #[sqlx::test]
-    // async fn test_create_true_response(pool: PgPool) -> sqlx::Result<()> {
-    //
-    // }
+    #[sqlx::test]
+    async fn test_create_item(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let db = Arc::new(pool);
+        let repo = ItemRepositoryImpl::new(db);
+
+        let item = repo
+            .create("test", "13af8f1e-6681-4d9e-b0ec-37078cf44628")
+            .await
+            .unwrap();
+
+        assert_eq!(1, 1);
+
+        Ok(())
+    }
 }

@@ -1,13 +1,16 @@
-use async_graphql::{Context, Object, SimpleObject};
+use async_graphql::{Context, Object};
 use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::organaization::{organization::Organization, organization_type},
+    value_object::organaization::organization_type,
 };
-use usecase::organization::usecase::OrganizationInteractor;
+use usecase::{item::usecase::ItemInteractor, organization::usecase::OrganizationInteractor};
 
 use crate::{db::persistence::postgres::DB, repository::repository_impl::RepositoryImpls};
 
-use super::schema::organization::{OrganizationSchema, ORGANIZATION_TYPE};
+use super::schema::{
+    item::ItemSchema,
+    organization::{OrganizationSchema, ORGANIZATION_TYPE},
+};
 
 pub struct Mutation;
 
@@ -40,6 +43,31 @@ impl Mutation {
             ognz_params.id,
             ognz_params.name,
             resp_ognz_type,
+        ))
+    }
+    async fn create_item<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "item name")] name: String,
+        #[graphql(desc = "item organization_id")] organization_id: String,
+    ) -> Result<ItemSchema, String> {
+        let db = ctx.data::<DB>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+        let item_usecase = ItemInteractor::new(&repo);
+
+        let created_item_result = item_usecase.create_item(&name, &organization_id).await;
+
+        let created_item = match created_item_result {
+            Ok(item) => item.get_params(),
+            Err(e) => {
+                return Err(e.to_string());
+            }
+        };
+
+        Ok(ItemSchema::new(
+            created_item.id,
+            created_item.name,
+            created_item.organization_id,
         ))
     }
 }

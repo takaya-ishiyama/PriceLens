@@ -2,6 +2,12 @@
 
 
 
+type ItemSchema {
+	id: String!
+	name: String!
+	organizationId: String!
+}
+
 type Mutation {
 	createOrganization(
 		"""
@@ -17,6 +23,16 @@ type Mutation {
 		"""
 		privateKey: String
 	): OrganizationSchema!
+	createItem(
+		"""
+		item name
+		"""
+		name: String!,
+		"""
+		item organization_id
+		"""
+		organizationId: String!
+	): ItemSchema!
 }
 
 type OrganizationSchema {
