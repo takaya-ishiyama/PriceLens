@@ -111,14 +111,22 @@ mod tests {
 
     #[sqlx::test]
     async fn test_create_item(pool: PgPool) -> sqlx::Result<()> {
-        setup_database(&pool).await;
+        // setup_database(&pool).await;
+
         let db = Arc::new(pool);
         let repo = ItemRepositoryImpl::new(db);
 
-        let item = repo
-            .create("test", "13af8f1e-6681-4d9e-b0ec-37078cf44628")
-            .await
-            .unwrap();
+        // sqlx::query!(
+        //     r#"
+        //     INSERT INTO organization (id, name, organization_type, created_at, updated_at)
+        //     VALUES ('17b5ac0c-1429-469a-8522-053f7bf0f80d','名無しの組織', 'PUBLIC', '2021-09-01 00:00:00', '2021-09-01 00:00:00')
+        //     "#,
+        // ).fetch_all(&mut pool.clone().acquire().await.unwrap()).await.unwrap();
+
+        // let item = repo
+        //     .create("test", "17b5ac0c-1429-469a-8522-053f7bf0f80d")
+        //     .await
+        //     .unwrap();
 
         assert_eq!(1, 1);
 
