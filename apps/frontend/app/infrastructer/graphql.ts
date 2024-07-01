@@ -16,9 +16,23 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type ItemSchema = {
+  __typename?: 'ItemSchema';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  organizationId: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createItem: ItemSchema;
   createOrganization: OrganizationSchema;
+};
+
+
+export type MutationCreateItemArgs = {
+  name: Scalars['String']['input'];
+  organizationId: Scalars['String']['input'];
 };
 
 
@@ -58,5 +72,15 @@ export type GetOrganizationQueryVariables = Exact<{
 
 export type GetOrganizationQuery = { __typename?: 'Query', organizationFindOne: { __typename?: 'OrganizationSchema', id: string, name: string, organizationType: OrganizationType } };
 
+export type CreateOrganizationMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  organizationType: Scalars['String']['input'];
+  privateKey?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CreateOrganizationMutation = { __typename?: 'Mutation', createOrganization: { __typename?: 'OrganizationSchema', id: string, name: string, organizationType: OrganizationType } };
+
 
 export const GetOrganizationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getOrganization"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organizationFindOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"organizationType"}}]}}]}}]} as unknown as DocumentNode<GetOrganizationQuery, GetOrganizationQueryVariables>;
+export const CreateOrganizationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createOrganization"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"organizationType"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"privateKey"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOrganization"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}},{"kind":"Argument","name":{"kind":"Name","value":"organizationType"},"value":{"kind":"Variable","name":{"kind":"Name","value":"organizationType"}}},{"kind":"Argument","name":{"kind":"Name","value":"privateKey"},"value":{"kind":"Variable","name":{"kind":"Name","value":"privateKey"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"organizationType"}}]}}]}}]} as unknown as DocumentNode<CreateOrganizationMutation, CreateOrganizationMutationVariables>;
