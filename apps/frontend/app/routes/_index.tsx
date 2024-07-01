@@ -14,5 +14,5 @@ export default function Index() {
         <Link to={RouteName.top}>get top page</Link>
       </div>
     </div>
-  );
+  )
 }

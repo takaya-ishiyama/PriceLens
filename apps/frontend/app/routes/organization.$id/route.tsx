@@ -1,8 +1,8 @@
 import React from "react";
 import { RequestOptions } from "graphql-request";
-import { client } from "app/infrastructure";
+import { client } from "app/infrastructuer";
 import { useLoaderData } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/node";
+import { HeadersFunction, LoaderFunction } from "@remix-run/node";
 import {
   GetOrganizationDocument,
   GetOrganizationQuery,
@@ -12,6 +12,12 @@ import {
 type OrganizationQuery = {
   organization: GetOrganizationQuery["organizationFindOne"];
 };
+
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  return {
+    "Cache-Control": "stale-while-revalidate=360, max-age=3600"
+  }
+}
 
 export const loader: LoaderFunction = async ({ params }) => {
   if (params.id == null) return;
