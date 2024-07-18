@@ -23,6 +23,7 @@
     "autoprefixer": "^10.4.18",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "graphql": "^16.8.1",
     "graphql-codegen": "^0.4.0",
     "graphql-request": "^6.1.0",
@@ -31,6 +32,7 @@
     "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.52.0",
     "recharts": "^2.12.7",
     "storybook": "^8.0.0",
     "tailwind-merge": "^2.2.1",
@@ -40,8 +42,9 @@
     "vercel": "^33.5.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.6.0",
     "@chromatic-com/storybook": "^1.2.20",
+    "@eslint/compat": "^1.1.0",
+    "@eslint/js": "^9.6.0",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/client-preset": "4.2.5",
     "@graphql-codegen/introspection": "4.0.3",
@@ -57,13 +60,18 @@
     "@storybook/react": "^8.0.0",
     "@storybook/react-webpack5": "^8.0.0",
     "@storybook/test": "^8.0.0",
+    "@types/eslint__js": "^8.42.3",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "eslint": "9.x",
+    "eslint-plugin-react": "^7.34.3",
+    "globals": "^15.8.0",
     "storybook-addon-sass-postcss": "^0.2.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.15.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=21.2.0"
   },
   "packageManager": "yarn@4.1.1"
 }

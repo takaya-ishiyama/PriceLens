@@ -1,6 +1,8 @@
 import { useNavigate } from "@remix-run/react";
 import { RouteName } from "app/consts/route_name";
 import React from "react";
+import { useCreateOrganization } from "./hooks/useCreateOrganization";
+import { OrganizationType } from "app/infrastructure/graphql";
 
 const TopScreen = () => {
   const navigate = useNavigate();
@@ -8,10 +10,13 @@ const TopScreen = () => {
     "5cda43e9-abfe-4ddd-800c-c1a8dedb4bcf",
   );
 
+
   const onClickGoToOrganization = React.useCallback(() => {
     if (organizationId === null) return;
     navigate(RouteName.organization(organizationId));
-  }, [organizationId, navigate]);
+  }, [organizationId, navigate, RouteName.organization]);
+
+
 
   return (
     <div>
@@ -21,7 +26,6 @@ const TopScreen = () => {
       <div>
         <button onClick={() => { }}>create organizatioon</button>
       </div>
-      {/* <button onClick={onClick}>to organization</button> */}
     </div>
   );
 };

@@ -13,7 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "query getOrganization($id: ID!) {\n  findOne(id: $id) {\n    id\n    name\n    organizationType\n  }\n}": types.GetOrganizationDocument,
+    "query getOrganization($id: ID!) {\n  organizationFindOne(id: $id) {\n    id\n    name\n    organizationType\n  }\n}": types.GetOrganizationDocument,
+    "mutation createOrganization($name: String!, $organizationType: String!, $privateKey: String) {\n  createOrganization(\n    name: $name\n    organizationType: $organizationType\n    privateKey: $privateKey\n  ) {\n    id\n    name\n    organizationType\n  }\n}": types.CreateOrganizationDocument,
 };
 
 /**
@@ -33,7 +34,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query getOrganization($id: ID!) {\n  findOne(id: $id) {\n    id\n    name\n    organizationType\n  }\n}"): (typeof documents)["query getOrganization($id: ID!) {\n  findOne(id: $id) {\n    id\n    name\n    organizationType\n  }\n}"];
+export function graphql(source: "query getOrganization($id: ID!) {\n  organizationFindOne(id: $id) {\n    id\n    name\n    organizationType\n  }\n}"): (typeof documents)["query getOrganization($id: ID!) {\n  organizationFindOne(id: $id) {\n    id\n    name\n    organizationType\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation createOrganization($name: String!, $organizationType: String!, $privateKey: String) {\n  createOrganization(\n    name: $name\n    organizationType: $organizationType\n    privateKey: $privateKey\n  ) {\n    id\n    name\n    organizationType\n  }\n}"): (typeof documents)["mutation createOrganization($name: String!, $organizationType: String!, $privateKey: String) {\n  createOrganization(\n    name: $name\n    organizationType: $organizationType\n    privateKey: $privateKey\n  ) {\n    id\n    name\n    organizationType\n  }\n}"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

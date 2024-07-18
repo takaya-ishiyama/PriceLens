@@ -1,13 +1,9 @@
 import React from "react";
 import { RequestOptions } from "graphql-request";
-import { client } from "app/infrastructuer";
+import { client } from "app/infrastructure";
 import { useLoaderData } from "@remix-run/react";
 import { HeadersFunction, LoaderFunction } from "@remix-run/node";
-import {
-  GetOrganizationDocument,
-  GetOrganizationQuery,
-  GetOrganizationQueryVariables,
-} from "app/infrastructer/graphql";
+import { GetOrganizationDocument, GetOrganizationQuery, GetOrganizationQueryVariables } from "app/infrastructure/graphql";
 
 type OrganizationQuery = {
   organization: GetOrganizationQuery["organizationFindOne"];

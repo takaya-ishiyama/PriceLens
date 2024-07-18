@@ -6,7 +6,7 @@ const config: CodegenConfig = {
   schema: "../backend/graphql/schema.gql",
   documents: "app/**/*.gql",
   generates: {
-    "app/infrastructer/": {
+    "app/infrastructure/": {
       preset: "client",
       plugins: []
     },
