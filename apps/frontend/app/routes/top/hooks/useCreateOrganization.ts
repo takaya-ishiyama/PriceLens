@@ -2,6 +2,8 @@ import { client } from "app/infrastructure";
 import { CreateOrganizationDocument, CreateOrganizationMutation, CreateOrganizationMutationVariables, GetOrganizationDocument, OrganizationType } from "app/infrastructure/graphql";
 import { RequestOptions } from "graphql-request";
 import React from "react";
+import { useNavigate } from "@remix-run/react";
+import { RouteName } from "app/consts/route_name";
 
 
 type InputProps = {
@@ -13,6 +15,7 @@ type CreateOrganization = {
   organization: CreateOrganizationMutation['createOrganization'];
 };
 export const useCreateOrganization = () => {
+  const navigate = useNavigate();
   const handleSubmitCreateOrganization = React.useCallback(async (input: InputProps) => {
     const requestOptions: RequestOptions<
       CreateOrganizationMutationVariables,
@@ -24,12 +27,12 @@ export const useCreateOrganization = () => {
 
     try {
       const { createOrganization } = await client.request(requestOptions);
-      return { organization: createOrganization } as CreateOrganization;
+      navigate(RouteName.organization(createOrganization.id));
     } catch (e) {
       console.log("エラーはっせい！！");
       throw new Error((e as Error).message);
     }
-  }, [OrganizationType])
+  }, [OrganizationType, RouteName])
 
   return { handleSubmitCreateOrganization }
 

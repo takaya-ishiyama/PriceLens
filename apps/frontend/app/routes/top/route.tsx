@@ -2,10 +2,8 @@ import { useNavigate } from "@remix-run/react";
 import { RouteName } from "app/consts/route_name";
 import React from "react";
 import { useCreateOrganization } from "./hooks/useCreateOrganization";
-import { OrganizationType } from "app/infrastructure/graphql";
 import { Button } from "@/components/ui/button";
 import { InputWithRHF } from "@/components/molecule/Input/InputWithRHF";
-import { useForm } from "react-hook-form";
 import { useCreateOrganizationForm } from "./hooks/useCreateOrganizationForm";
 
 const TopScreen = () => {
