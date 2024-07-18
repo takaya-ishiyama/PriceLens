@@ -1,24 +1,27 @@
 import { client } from "app/infrastructure";
-import { CreateOrganizationMutation, CreateOrganizationMutationVariables, GetOrganizationDocument, OrganizationType } from "app/infrastructure/graphql";
+import { CreateOrganizationDocument, CreateOrganizationMutation, CreateOrganizationMutationVariables, GetOrganizationDocument, OrganizationType } from "app/infrastructure/graphql";
 import { RequestOptions } from "graphql-request";
 import React from "react";
 
-type Props = {
+
+type InputProps = {
   name: string;
-  organizationType: OrganizationType;
+  // organizationType: OrganizationType; //FIXME: 追加する
 };
+
 type CreateOrganization = {
   organization: CreateOrganizationMutation['createOrganization'];
 };
-export const useCreateOrganization = (props: Props) => {
-  const requestOptions: RequestOptions<
-    CreateOrganizationMutationVariables,
-    CreateOrganizationMutation
-  > = {
-    document: GetOrganizationDocument,
-    variables: props,
-  };
-  const handleSubmitCreateOrganization = React.useCallback(async () => {
+export const useCreateOrganization = () => {
+  const handleSubmitCreateOrganization = React.useCallback(async (input: InputProps) => {
+    const requestOptions: RequestOptions<
+      CreateOrganizationMutationVariables,
+      CreateOrganizationMutation
+    > = {
+      document: CreateOrganizationDocument,
+      variables: { organizationType: OrganizationType.Public, ...input },
+    };
+
     try {
       const { createOrganization } = await client.request(requestOptions);
       return { organization: createOrganization } as CreateOrganization;
@@ -26,7 +29,7 @@ export const useCreateOrganization = (props: Props) => {
       console.log("エラーはっせい！！");
       throw new Error((e as Error).message);
     }
-  }, [requestOptions])
+  }, [OrganizationType])
 
   return { handleSubmitCreateOrganization }
 
