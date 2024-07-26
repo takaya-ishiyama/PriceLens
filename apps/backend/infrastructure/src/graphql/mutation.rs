@@ -1,8 +1,9 @@
 use async_graphql::{Context, Object};
 use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::organaization::organization_type,
+    value_object::{organaization::organization_type, Error::app_error::AppError},
 };
+use hyper::StatusCode;
 use usecase::{item::usecase::ItemInteractor, organization::usecase::OrganizationInteractor};
 
 use crate::{db::persistence::postgres::DB, repository::repository_impl::RepositoryImpls};
@@ -11,6 +12,8 @@ use super::schema::{
     item::ItemSchema,
     organization::{OrganizationSchema, ORGANIZATION_TYPE},
 };
+
+use axum::response::{IntoResponse, Response as AxumResponse};
 
 pub struct Mutation;
 
@@ -22,17 +25,23 @@ impl Mutation {
         #[graphql(desc = "name of object")] name: String,
         #[graphql(desc = "organization_type of object")] organization_type: String,
         #[graphql(desc = "private_key of object")] private_key: Option<String>,
-    ) -> Result<OrganizationSchema, String> {
+    ) -> Result<OrganizationSchema, AppError> {
         let db = ctx.data::<DB>().unwrap().0.clone();
         let repo = RepositoryImpls::new(db);
         let ognz_usecase = OrganizationInteractor::new(&repo);
 
         let _private_key: Option<&str> = private_key.as_ref().map(|s| s.as_str());
 
-        let create_ognz = ognz_usecase
+        let _create_ognz = ognz_usecase
             .create_organization(&name, &organization_type, _private_key)
-            .await
-            .unwrap();
+            .await;
+
+        let create_ognz = match _create_ognz {
+            Ok(ognz) => ognz,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e.to_string()).into());
+            }
+        };
 
         let ognz_params = create_ognz.get_params();
         let resp_ognz_type = match ognz_params.organization_type {

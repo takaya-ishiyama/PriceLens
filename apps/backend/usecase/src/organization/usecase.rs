@@ -24,6 +24,12 @@ impl<'r, R: Repositories> OrganizationInteractor<'r, R> {
         organization_type: &str,
         private_key: Option<&'r str>,
     ) -> Result<Organization, String> {
+        let exist_same_name = self.organization_repo.exist_same_name(name).await?;
+        match exist_same_name {
+            true => return Err("Organization name already exists".to_string()),
+            false => (),
+        };
+
         let _organization_type = match organization_type {
             "PUBLIC" => ORGANIZATION_TYPE::PUBLIC,
             "PRIVATE" => ORGANIZATION_TYPE::PRIVATE,

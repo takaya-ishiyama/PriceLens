@@ -123,6 +123,23 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
             }
         }
     }
+    async fn exist_same_name(&self, name: &str) -> Result<bool, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        // let mut tx = conn.begin().await.unwrap();
+
+        let exists = sqlx::query!(
+            r#"SELECT EXISTS (SELECT 1 FROM organization WHERE name = $1) as "exists!""#,
+            name
+        )
+        .fetch_one(&mut *conn)
+        .await;
+
+        match exists {
+            Ok(exists) => Ok(exists.exists),
+            Err(e) => Err(e.to_string()),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -155,7 +172,18 @@ mod tests {
     //     let db = Arc::new(pool);
     //     let repo = OrganizationRepositoryImpl::new(db);
 
-    //     let organization = repo.find_one(&stb[0].get_params().id).await.unwrap();
+    //     sqlx::query!(
+    //         r#"
+    //         INSERT INTO organization (id, name, organization_type, created_at, updated_at)
+    //         VALUES ('17b5ac0c-1429-469a-8522-053f7bf0f80d','名無しの組織', 'PUBLIC', '2021-09-01 00:00:00', '2021-09-01 00:00:00')
+    //         "#
+    //     );
+
+    //     // let organization = repo.find_one_by_id(&stb[0].get_params().id).await.unwrap();
+    //     let organization = repo
+    //         .find_one_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d")
+    //         .await
+    //         .unwrap();
 
     //     assert_eq!(organization.get_params().name, stb[0].get_params().id);
 

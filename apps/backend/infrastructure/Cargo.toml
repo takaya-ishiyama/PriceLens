@@ -29,6 +29,7 @@ dotenv = "0.15.0"
 mockall = { version = "0.12.0" }
 futures-util = "0.3.17"
 tracing = { version = "0.1.27" }
+anyhow = {version = "1.0.86"}
 
 
 [dependencies.uuid]
