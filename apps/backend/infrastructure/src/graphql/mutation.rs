@@ -3,7 +3,6 @@ use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
     value_object::{organaization::organization_type, Error::app_error::AppError},
 };
-use hyper::StatusCode;
 use usecase::{item::usecase::ItemInteractor, organization::usecase::OrganizationInteractor};
 
 use crate::{db::persistence::postgres::DB, repository::repository_impl::RepositoryImpls};
@@ -12,8 +11,6 @@ use super::schema::{
     item::ItemSchema,
     organization::{OrganizationSchema, ORGANIZATION_TYPE},
 };
-
-use axum::response::{IntoResponse, Response as AxumResponse};
 
 pub struct Mutation;
 
@@ -59,7 +56,7 @@ impl Mutation {
         ctx: &Context<'ctx>,
         #[graphql(desc = "item name")] name: String,
         #[graphql(desc = "item organization_id")] organization_id: String,
-    ) -> Result<ItemSchema, String> {
+    ) -> Result<ItemSchema, AppError> {
         let db = ctx.data::<DB>().unwrap().0.clone();
         let repo = RepositoryImpls::new(db);
         let item_usecase = ItemInteractor::new(&repo);
@@ -69,7 +66,7 @@ impl Mutation {
         let created_item = match created_item_result {
             Ok(item) => item.get_params(),
             Err(e) => {
-                return Err(e.to_string());
+                return Err(anyhow::anyhow!(e.to_string()).into());
             }
         };
 

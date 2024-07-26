@@ -2,7 +2,10 @@ use crate::{db::persistence::postgres::DB, repository::repository_impl::Reposito
 use async_graphql::*;
 use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::organaization::organization_type::ORGANIZATION_TYPE as DOMAIN_ORGANIZATION_TYPE,
+    value_object::{
+        organaization::organization_type::ORGANIZATION_TYPE as DOMAIN_ORGANIZATION_TYPE,
+        Error::app_error::AppError,
+    },
 };
 use usecase::organization::usecase::OrganizationInteractor;
 
@@ -21,13 +24,20 @@ impl Query {
         &self,
         ctx: &Context<'ctx>,
         #[graphql(desc = "id of object")] id: ID,
-    ) -> Result<OrganizationSchema, String> {
+    ) -> Result<OrganizationSchema, AppError> {
         let db = ctx.data::<DB>().unwrap().0.clone();
         let repo = RepositoryImpls::new(db);
 
         let organization_usecase = OrganizationInteractor::new(&repo);
 
-        let organization = organization_usecase.find_one_by_id(&id).await.unwrap();
+        let _organization = organization_usecase.find_one_by_id(&id).await;
+
+        let organization = match _organization {
+            Ok(organization) => organization,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e.to_string()).into());
+            }
+        };
 
         let ognz_params = organization.get_params();
         let resp_ognz_type = match ognz_params.organization_type {

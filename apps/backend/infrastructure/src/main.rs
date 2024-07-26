@@ -11,7 +11,7 @@ use std::net::SocketAddr;
 use async_graphql::http::GraphQLPlaygroundConfig;
 use async_graphql::{http::playground_source, EmptySubscription, Request, Response, Schema};
 
-use axum::extract::{Json, State};
+use axum::extract::Json;
 use axum::{extract::Extension, response::Html, routing::get, routing::post, Router};
 
 use graphql::mutation::Mutation;
