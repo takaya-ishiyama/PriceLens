@@ -33,6 +33,13 @@ struct CreatedOrganization {
     updated_at: Option<NaiveDateTime>,
 }
 
+#[derive(FromRow)]
+struct FindManyOrganization {
+    id: Uuid,
+    name: String,
+    organization_type: OrganizationType,
+}
+
 #[async_trait]
 impl OrganizationRepository for OrganizationRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
@@ -126,7 +133,6 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
     async fn exist_same_name(&self, name: &str) -> Result<bool, String> {
         let mut pool = self.db.acquire().await.unwrap();
         let conn = pool.acquire().await.unwrap();
-        // let mut tx = conn.begin().await.unwrap();
 
         let exists = sqlx::query!(
             r#"SELECT EXISTS (SELECT 1 FROM organization WHERE name = $1) as "exists!""#,
@@ -137,6 +143,40 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
 
         match exists {
             Ok(exists) => Ok(exists.exists),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+    async fn find_many_by_name(&self, name: &str) -> Result<Vec<Organization>, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        let mut tx = conn.begin().await.unwrap();
+
+        let found_ogn = sqlx::query_as!(
+            FindManyOrganization,
+            r#"SELECT id,name,organization_type AS "organization_type!: OrganizationType" FROM organization WHERE name = $1"#,
+            name
+        )
+        .fetch_all(&mut *tx)
+        .await;
+
+        match found_ogn {
+            Ok(ogn) => ogn
+                .iter()
+                .map(|_org| {
+                    let tmp_organization_type = match _org.organization_type {
+                        OrganizationType::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
+                        OrganizationType::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
+                    };
+                    Ok(Organization::new(
+                        &_org.id.to_string(),
+                        &_org.name,
+                        &tmp_organization_type,
+                        "",
+                        "",
+                        "",
+                    ))
+                })
+                .collect(),
             Err(e) => Err(e.to_string()),
         }
     }

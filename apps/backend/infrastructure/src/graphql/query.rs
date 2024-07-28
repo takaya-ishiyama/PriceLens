@@ -50,4 +50,38 @@ impl Query {
             resp_ognz_type,
         ))
     }
+
+    async fn organization_find_many_by_name<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "name")] name: String,
+    ) -> Result<Vec<OrganizationSchema>, AppError> {
+        let db = ctx.data::<DB>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+
+        let organization_usecase = OrganizationInteractor::new(&repo);
+
+        let _organization = organization_usecase.find_many_by_name(&name).await;
+
+        let organization = match _organization {
+            Ok(organization) => organization,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e.to_string()).into());
+            }
+        };
+
+        let array_ognz_params = organization
+            .iter()
+            .map(|_org| {
+                let params = _org.get_params();
+                let org_type = match params.organization_type {
+                    DOMAIN_ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
+                    DOMAIN_ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
+                };
+                OrganizationSchema::new(params.id, params.name, org_type)
+            })
+            .collect();
+
+        Ok(array_ognz_params)
+    }
 }
