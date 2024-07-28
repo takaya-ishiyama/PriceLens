@@ -54,6 +54,12 @@ type Query {
 		"""
 		id: ID!
 	): OrganizationSchema!
+	organizationFindManyByName(
+		"""
+		name
+		"""
+		name: String!
+	): [OrganizationSchema!]!
 }
 
 

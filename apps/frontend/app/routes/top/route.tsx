@@ -30,7 +30,7 @@ const TopScreen = () => {
   const onClickGoToOrganization = React.useCallback(() => {
     if (organizationId === null) return;
     navigate(RouteName.organization(organizationId));
-  }, [organizationId, navigate, RouteName.organization]);
+  }, [organizationId, navigate]);
 
   return (
     <div>
@@ -38,7 +38,7 @@ const TopScreen = () => {
         <Button onClick={onClickGoToOrganization}>to organization</Button>
       </div>
       <div>
-        <button onClick={handleSubmit}>create organizatioon</button>
+        <Button onClick={handleSubmit}>create organizatioon</Button>
         {/* modalにする予定 */}
         <InputWithRHF name={"name"} control={control} />
       </div>

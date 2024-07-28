@@ -1,2 +1,3 @@
 export * from "./fragment-masking";
-export * from './graphql-request'
+export * from "./gql";
+export * from "graphql-request"

@@ -57,7 +57,13 @@ export enum OrganizationType {
 export type Query = {
   __typename?: 'Query';
   currentToken?: Maybe<Scalars['String']['output']>;
+  organizationFindManyByName: Array<OrganizationSchema>;
   organizationFindOne: OrganizationSchema;
+};
+
+
+export type QueryOrganizationFindManyByNameArgs = {
+  name: Scalars['String']['input'];
 };
 
 
