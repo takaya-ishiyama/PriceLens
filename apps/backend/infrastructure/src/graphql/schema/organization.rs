@@ -29,7 +29,7 @@ impl OrganizationSchema {
         }
     }
 
-    pub fn new_from_domain_organizations(organizations: Vec<Organization>) -> Vec<Self> {
+    pub fn new_from_vec(organizations: Vec<Organization>) -> Vec<OrganizationSchema> {
         organizations
             .iter()
             .map(|_org| {
@@ -38,12 +38,16 @@ impl OrganizationSchema {
                     DOMAIN_ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
                     DOMAIN_ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
                 };
-                Self {
+                OrganizationSchema {
                     id: params.id,
                     name: params.name,
                     organization_type: org_type,
                 }
             })
             .collect()
+    }
+
+    pub fn cursor(&self) -> String {
+        self.id.clone()
     }
 }

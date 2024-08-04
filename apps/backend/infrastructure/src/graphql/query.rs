@@ -67,7 +67,7 @@ impl Query {
             }
         };
 
-        let array_ognz_params = OrganizationSchema::new_from_domain_organizations(organizations);
+        let array_ognz_params = OrganizationSchema::new_from_vec(organizations);
 
         Ok(array_ognz_params)
     }
@@ -92,27 +92,15 @@ impl Query {
 
         let mut connection = Connection::new(true, true);
 
-        let organization = match _ogn {
+        let organizations = match _ogn {
             Ok(organization) => organization,
             Err(e) => {
                 return Err(anyhow::anyhow!(e.to_string()).into());
             }
         };
 
-        let mut cursor = "none".to_string();
-        let array_ognz = organization
-            .iter()
-            .map(|_org| {
-                let params = _org.get_params();
-                cursor = params.id.clone();
-                let org_type = match params.organization_type {
-                    DOMAIN_ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
-                    DOMAIN_ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
-                };
-                OrganizationSchema::new(params.id, params.name, org_type)
-            })
-            .collect();
-
+        let array_ognz = OrganizationSchema::new_from_vec(organizations);
+        let cursor = array_ognz[0].cursor();
         connection.edges.push(Edge::new(cursor, array_ognz));
 
         Ok(connection)
