@@ -40,16 +40,7 @@ impl Mutation {
             }
         };
 
-        let ognz_params = create_ognz.get_params();
-        let resp_ognz_type = match ognz_params.organization_type {
-            organization_type::ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
-            organization_type::ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
-        };
-        Ok(OrganizationSchema::new(
-            ognz_params.id,
-            ognz_params.name,
-            resp_ognz_type,
-        ))
+        Ok(OrganizationSchema::new(create_ognz))
     }
     async fn create_item<'ctx>(
         &self,

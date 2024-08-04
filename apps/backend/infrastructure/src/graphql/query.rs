@@ -1,5 +1,8 @@
 use crate::{db::persistence::postgres::DB, repository::repository_impl::RepositoryImpls};
-use async_graphql::*;
+use async_graphql::{
+    connection::{Connection, Edge, EmptyFields},
+    *,
+};
 use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
     value_object::{
@@ -9,7 +12,10 @@ use domain::{
 };
 use usecase::organization::usecase::OrganizationInteractor;
 
-use super::schema::organization::{OrganizationSchema, ORGANIZATION_TYPE};
+use super::schema::{
+    organization::{OrganizationSchema, ORGANIZATION_TYPE},
+    pagenate::CustomConnectionFields,
+};
 
 pub struct Query;
 
@@ -39,16 +45,7 @@ impl Query {
             }
         };
 
-        let ognz_params = organization.get_params();
-        let resp_ognz_type = match ognz_params.organization_type {
-            DOMAIN_ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
-            DOMAIN_ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
-        };
-        Ok(OrganizationSchema::new(
-            ognz_params.id,
-            ognz_params.name,
-            resp_ognz_type,
-        ))
+        Ok(OrganizationSchema::new(organization))
     }
 
     async fn organization_find_many_by_name<'ctx>(
@@ -61,19 +58,53 @@ impl Query {
 
         let organization_usecase = OrganizationInteractor::new(&repo);
 
-        let _organization = organization_usecase.find_many_by_name(&name).await;
+        let _organizations = organization_usecase.find_many_by_name(&name).await;
 
-        let organization = match _organization {
+        let organizations = match _organizations {
             Ok(organization) => organization,
             Err(e) => {
                 return Err(anyhow::anyhow!(e.to_string()).into());
             }
         };
 
-        let array_ognz_params = organization
+        let array_ognz_params = OrganizationSchema::new_from_domain_organizations(organizations);
+
+        Ok(array_ognz_params)
+    }
+
+    async fn organization_find_all_with_pagenate<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        #[graphql(desc = "after")] after: Option<String>,
+        #[graphql(desc = "before")] before: Option<String>,
+        #[graphql(desc = "first")] first: Option<i32>,
+        #[graphql(desc = "last")] last: Option<i32>,
+    ) -> Result<Connection<String, Vec<OrganizationSchema>, EmptyFields, EmptyFields>, AppError>
+    {
+        let db = ctx.data::<DB>().unwrap().0.clone();
+        let repo = RepositoryImpls::new(db);
+
+        let organization_usecase = OrganizationInteractor::new(&repo);
+
+        let _ogn = organization_usecase
+            .find_all_with_pagenate(after, before, first, last)
+            .await;
+
+        let mut connection = Connection::new(true, true);
+
+        let organization = match _ogn {
+            Ok(organization) => organization,
+            Err(e) => {
+                return Err(anyhow::anyhow!(e.to_string()).into());
+            }
+        };
+
+        let mut cursor = "none".to_string();
+        let array_ognz = organization
             .iter()
             .map(|_org| {
                 let params = _org.get_params();
+                cursor = params.id.clone();
                 let org_type = match params.organization_type {
                     DOMAIN_ORGANIZATION_TYPE::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
                     DOMAIN_ORGANIZATION_TYPE::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
@@ -82,6 +113,8 @@ impl Query {
             })
             .collect();
 
-        Ok(array_ognz_params)
+        connection.edges.push(Edge::new(cursor, array_ognz));
+
+        Ok(connection)
     }
 }

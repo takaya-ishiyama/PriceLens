@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use async_graphql::connection::PageInfo;
 use axum::async_trait;
 use domain::{
     infrastructure::interface::repository::organization_repository_interface::OrganizationRepository,
@@ -41,6 +42,7 @@ struct FindManyOrganization {
 }
 
 #[async_trait]
+// FIXME:分割したい
 impl OrganizationRepository for OrganizationRepositoryImpl {
     fn new(db: Arc<Pool<Postgres>>) -> Self {
         Self { db }
@@ -179,6 +181,12 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
                 .collect(),
             Err(e) => Err(e.to_string()),
         }
+    }
+
+    async fn find_all_with_pagenate(
+        &self,
+        page_info: PageInfo,
+    ) -> Result<Vec<Organization>, String> {
     }
 }
 

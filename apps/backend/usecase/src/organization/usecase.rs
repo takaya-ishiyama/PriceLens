@@ -1,8 +1,11 @@
 use domain::{
-    infrastructure::interface::repository::organization_repository_interface::OrganizationRepository,
-    infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::organaization::{
-        organization::Organization, organization_type::ORGANIZATION_TYPE,
+    infrastructure::interface::repository::{
+        organization_repository_interface::OrganizationRepository,
+        repository_interface::Repositories,
+    },
+    value_object::{
+        organaization::{organization::Organization, organization_type::ORGANIZATION_TYPE},
+        page_info::PageInfo,
     },
 };
 
@@ -49,6 +52,21 @@ impl<'r, R: Repositories> OrganizationInteractor<'r, R> {
 
     pub async fn find_many_by_name(&self, name: &str) -> Result<Vec<Organization>, String> {
         let organizations = self.organization_repo.find_many_by_name(name).await?;
+        Ok(organizations)
+    }
+
+    pub async fn find_all_with_pagenate(
+        &self,
+        after: Option<String>,
+        before: Option<String>,
+        first: Option<i32>,
+        last: Option<i32>,
+    ) -> Result<Vec<Organization>, String> {
+        let page_info = PageInfo::new(after, before, first, last);
+        let organizations = self
+            .organization_repo
+            .find_all_with_pagenate(page_info)
+            .await?;
         Ok(organizations)
     }
 }

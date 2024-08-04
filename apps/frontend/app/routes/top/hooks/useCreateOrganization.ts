@@ -15,9 +15,6 @@ type InputProps = {
   // organizationType: OrganizationType; //FIXME: 追加する
 };
 
-// type CreateOrganization = {
-//   organization: CreateOrganizationMutation["createOrganization"];
-// };
 export const useCreateOrganization = () => {
   const navigate = useNavigate();
   const handleSubmitCreateOrganization = React.useCallback(
@@ -34,7 +31,7 @@ export const useCreateOrganization = () => {
         const { createOrganization } = await client.request(requestOptions);
         navigate(RouteName.organization(createOrganization.id));
       } catch (e) {
-        console.log("エラーはっせい！！");
+        console.log("エラーはっせい！！", (e as Error).message);
         throw new Error((e as Error).message);
       }
     },
