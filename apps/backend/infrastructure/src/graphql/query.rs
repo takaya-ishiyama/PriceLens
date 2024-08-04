@@ -5,17 +5,11 @@ use async_graphql::{
 };
 use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::{
-        organaization::organization_type::ORGANIZATION_TYPE as DOMAIN_ORGANIZATION_TYPE,
-        Error::app_error::AppError,
-    },
+    value_object::Error::app_error::AppError,
 };
 use usecase::organization::usecase::OrganizationInteractor;
 
-use super::schema::{
-    organization::{OrganizationSchema, ORGANIZATION_TYPE},
-    pagenate::CustomConnectionFields,
-};
+use super::schema::organization::OrganizationSchema;
 
 pub struct Query;
 

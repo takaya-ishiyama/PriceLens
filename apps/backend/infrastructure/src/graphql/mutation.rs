@@ -1,16 +1,13 @@
 use async_graphql::{Context, Object};
 use domain::{
     infrastructure::interface::repository::repository_interface::Repositories,
-    value_object::{organaization::organization_type, Error::app_error::AppError},
+    value_object::Error::app_error::AppError,
 };
 use usecase::{item::usecase::ItemInteractor, organization::usecase::OrganizationInteractor};
 
 use crate::{db::persistence::postgres::DB, repository::repository_impl::RepositoryImpls};
 
-use super::schema::{
-    item::ItemSchema,
-    organization::{OrganizationSchema, ORGANIZATION_TYPE},
-};
+use super::schema::{item::ItemSchema, organization::OrganizationSchema};
 
 pub struct Mutation;
 
