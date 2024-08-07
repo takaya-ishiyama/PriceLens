@@ -73,8 +73,7 @@ impl Query {
         #[graphql(desc = "before")] before: Option<String>,
         #[graphql(desc = "first")] first: Option<i32>,
         #[graphql(desc = "last")] last: Option<i32>,
-    ) -> Result<Connection<String, Vec<OrganizationSchema>, EmptyFields, EmptyFields>, AppError>
-    {
+    ) -> Result<Connection<String, OrganizationSchema, EmptyFields, EmptyFields>, AppError> {
         let db = ctx.data::<DB>().unwrap().0.clone();
         let repo = RepositoryImpls::new(db);
 
@@ -84,8 +83,6 @@ impl Query {
             .find_all_with_pagenate(after, before, first, last)
             .await;
 
-        let mut connection = Connection::new(true, true);
-
         let organizations = match _ogn {
             Ok(organization) => organization,
             Err(e) => {
@@ -94,8 +91,18 @@ impl Query {
         };
 
         let array_ognz = OrganizationSchema::new_from_vec(organizations);
-        let cursor = array_ognz[0].cursor();
-        connection.edges.push(Edge::new(cursor, array_ognz));
+
+        let mut connection = Connection::new(true, true);
+        // let cursor = array_ognz[0].cursor();
+        // for ognz in array_ognz {
+        //     connection.edges.push(Edge::new(ognz.cursor(), ognz));
+        // }
+        // connection.edges.push(Edge::new(cursor, array_ognz));
+        connection.edges.extend(
+            array_ognz
+                .into_iter()
+                .map(|ognz| Edge::with_additional_fields(ognz.cursor(), ognz, EmptyFields)),
+        );
 
         Ok(connection)
     }

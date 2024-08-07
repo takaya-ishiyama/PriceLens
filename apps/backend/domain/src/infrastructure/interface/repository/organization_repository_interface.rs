@@ -23,7 +23,11 @@ pub trait OrganizationRepository {
     async fn exist_same_name(&self, name: &str) -> Result<bool, String>;
     async fn find_many_by_name(&self, name: &str) -> Result<Vec<Organization>, String>;
     async fn find_all_with_pagenate(
+        // FIXME:引数をコピーしないで受け取りたい
         &self,
-        page_info: PageInfo,
+        after: Option<String>,
+        before: Option<String>,
+        first: Option<i32>,
+        last: Option<i32>,
     ) -> Result<Vec<Organization>, String>;
 }

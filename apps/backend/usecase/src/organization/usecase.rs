@@ -62,10 +62,9 @@ impl<'r, R: Repositories> OrganizationInteractor<'r, R> {
         first: Option<i32>,
         last: Option<i32>,
     ) -> Result<Vec<Organization>, String> {
-        let page_info = PageInfo::new(after, before, first, last);
         let organizations = self
             .organization_repo
-            .find_all_with_pagenate(page_info)
+            .find_all_with_pagenate(after, before, first, last)
             .await?;
         Ok(organizations)
     }

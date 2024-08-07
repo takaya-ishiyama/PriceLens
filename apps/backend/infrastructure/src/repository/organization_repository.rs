@@ -8,7 +8,11 @@ use domain::{
     value_object::organaization::organization_type::ORGANIZATION_TYPE,
 };
 use serde::{Deserialize, Serialize};
-use sqlx::{prelude::FromRow, types::chrono::NaiveDateTime, Acquire, Pool, Postgres};
+use sqlx::{
+    prelude::FromRow,
+    types::chrono::{Local, NaiveDate, NaiveDateTime},
+    Acquire, Pool, Postgres,
+};
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
@@ -185,8 +189,89 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
 
     async fn find_all_with_pagenate(
         &self,
-        page_info: PageInfo,
+        after: Option<String>,
+        before: Option<String>,
+        first: Option<i32>,
+        last: Option<i32>,
     ) -> Result<Vec<Organization>, String> {
+        let mut pool = self.db.acquire().await.unwrap();
+        let conn = pool.acquire().await.unwrap();
+        let mut tx = conn.begin().await.unwrap();
+
+        // afterをbeforeはどちらかしか来ないからdate = match(first, last)とかでいいかも。その場合after,beforeのハンドリングも考える
+        let after_date = match after {
+            Some(after) => {
+                let date = NaiveDateTime::parse_from_str(&after, "%Y/%m/%d %H:%M:%S");
+                match date {
+                    Ok(date) => date,
+                    Err(e) => return Err(e.to_string()),
+                }
+            }
+            None => {
+                NaiveDateTime::parse_from_str("1970/01/01 00:00:00", "%Y/%m/%d %H:%M:%S").unwrap()
+            }
+        };
+
+        let before_date = match before {
+            Some(before) => {
+                let date = NaiveDateTime::parse_from_str(&before, "%Y/%m/%d %H:%M:%S");
+                match date {
+                    Ok(date) => date,
+                    Err(e) => return Err(e.to_string()),
+                }
+            }
+            None => {
+                NaiveDateTime::parse_from_str("1970/01/01 00:00:00", "%Y/%m/%d %H:%M:%S").unwrap()
+            }
+        };
+
+        // ulidにしたほうがいいかも。だるい
+        let onzs = match (first, last) {
+            (Some(first), _) => {
+                let found_ogn = sqlx::query_as!(
+                    FindManyOrganization,
+                    r#"SELECT id,name,organization_type AS "organization_type!: OrganizationType" FROM organization WHERE created_at > $1 ORDER BY created_at DESC LIMIT 10"#,
+                    after_date,
+                    // first // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
+                ).fetch_all(&mut *tx).await;
+
+                match found_ogn {
+                    Ok(ogn) => ogn,
+                    Err(e) => return Err(e.to_string()),
+                }
+            }
+            (None, Some(last)) => {
+                let found_ogn = sqlx::query_as!(
+                    FindManyOrganization,
+                    r#"SELECT id,name,organization_type AS "organization_type!: OrganizationType" FROM organization WHERE created_at < $1 ORDER BY created_at DESC LIMIT 10"#,
+                    before_date,
+                    // last // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
+                ).fetch_all(&mut *tx).await;
+
+                match found_ogn {
+                    Ok(ogn) => ogn,
+                    Err(e) => return Err(e.to_string()),
+                }
+            }
+            (None, None) => Vec::new(),
+        };
+
+        onzs.iter()
+            .map(|org| {
+                let tmp_organization_type = match org.organization_type {
+                    OrganizationType::PUBLIC => ORGANIZATION_TYPE::PUBLIC,
+                    OrganizationType::PRIVATE => ORGANIZATION_TYPE::PRIVATE,
+                };
+                Ok(Organization::new(
+                    &org.id.to_string(),
+                    &org.name,
+                    &tmp_organization_type,
+                    "",
+                    "",
+                    "",
+                ))
+            })
+            .collect()
     }
 }
 

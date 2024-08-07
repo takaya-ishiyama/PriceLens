@@ -35,9 +35,4 @@ impl PageInfo {
             last: self.last,
         }
     }
-
-    pub fn format_api_resp(
-        &self,
-    ) -> Connection<String, Vec<OrganizationSchema>, EmptyFields, EmptyFields> {
-    }
 }
