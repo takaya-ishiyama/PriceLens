@@ -1,6 +1,6 @@
 import { Input } from "@/components/atom";
-import React from "react";
-import { Controller, FieldValues, UseControllerProps } from "react-hook-form";
+import type React from "react";
+import { Controller, type FieldValues, type UseControllerProps } from "react-hook-form";
 
 type InputProps = React.ComponentProps<typeof Input>;
 type ErrorProps = {};
@@ -43,5 +43,5 @@ export const InputWithRHF = <TFieldValues extends FieldValues>({
         </div>
       )}
     />
-  )
-}
+  );
+};
