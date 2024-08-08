@@ -25,7 +25,8 @@ export const loader: LoaderFunction = async ({ params }) => {
     variables: { first: 10 },
   };
   try {
-    const { organizationFindAllWithPagenate } = await client.request(requestOptions);
+    const { organizationFindAllWithPagenate } =
+      await client.request(requestOptions);
     return organizationFindAllWithPagenate;
   } catch (e) {
     console.log("エラーはっせい！！");
@@ -54,16 +55,18 @@ const TopScreen = () => {
     [handleSubmitWithRHF, handleSubmitCreateOrganization],
   );
 
-  const onClickGoToOrganization = React.useCallback(() => {
-    if (organizationId === null) return;
-    navigate(RouteName.organization(organizationId));
-  }, [organizationId, navigate]);
+
+  // 今のところ使っていない
+  // const handleClickGoToOrganization = React.useCallback(
+  //   (organizationId: string) => {
+  //     if (organizationId === null) return;
+  //     navigate(RouteName.organization(organizationId));
+  //   },
+  //   [navigate],
+  // );
 
   return (
     <div>
-      <div>
-        <Button onClick={onClickGoToOrganization}>to organization</Button>
-      </div>
       <div>
         <Button onClick={handleSubmit}>create organizatioon</Button>
         {/* modalにする予定 */}
@@ -71,9 +74,7 @@ const TopScreen = () => {
       </div>
       <div>
         <Input />
-        <Button>
-          検索
-        </Button>
+        <Button>検索</Button>
       </div>
       <NodeOrganizations />
     </div>

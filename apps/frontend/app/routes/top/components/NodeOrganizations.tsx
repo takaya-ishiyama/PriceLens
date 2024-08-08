@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
+import { RouteName } from "app/consts/route_name";
 import type { FindManyOrganizationWithPageneQuery } from "app/infrastructure/graphql";
+
+
 
 export const NodeOrganizations: React.FC = () => {
   const { nodes, pageInfo } =
@@ -12,7 +15,9 @@ export const NodeOrganizations: React.FC = () => {
     <div>
       <div>
         {nodes.map((ognz) => (
-          <div key={ognz.id}>{ognz.name}</div>
+          <Link key={ognz.id} to={`${RouteName.organization(ognz.id)}`}>
+            <div >{ognz.name}</div>
+          </Link>
         ))}
       </div>
       <Button>
