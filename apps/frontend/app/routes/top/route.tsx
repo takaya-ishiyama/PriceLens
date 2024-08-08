@@ -36,9 +36,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 const TopScreen = () => {
   const navigate = useNavigate();
-  const [organizationId] = React.useState<string | null>(
-    "5cda43e9-abfe-4ddd-800c-c1a8dedb4bcf",
-  );
 
   const {
     form: {
@@ -73,6 +70,7 @@ const TopScreen = () => {
         <InputWithRHF name={"name"} control={control} />
       </div>
       <div>
+        {/* FIXME:検索機能作る */}
         <Input />
         <Button>検索</Button>
       </div>
