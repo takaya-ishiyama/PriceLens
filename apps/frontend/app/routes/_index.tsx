@@ -11,7 +11,7 @@ export default function Index() {
   return (
     <div>
       <div className={"grid place-content-center"}>
-        <Link to={RouteName.top}>get top page</Link>
+        <Link to={RouteName.top('1')}>get top page</Link>
       </div>
     </div>
   )

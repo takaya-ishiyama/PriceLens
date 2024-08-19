@@ -1,0 +1,13 @@
+query findManyOrganizationWithPagene($first:Int, $last:Int, $after:String, $before:String) {
+  organizationFindAllWithPagenate(first:$first, last:$last, after:$after, before:$before){
+    nodes{
+      id
+      organizationType
+      name
+    }
+      pageInfo{
+      hasNextPage
+      hasPreviousPage
+    }
+}
+}

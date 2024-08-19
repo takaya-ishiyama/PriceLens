@@ -1,5 +1,3 @@
-// @deprecated このファイルは削除予定
-
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { RouteName } from "app/consts/route_name";
 import React from "react";
@@ -19,6 +17,7 @@ import { Input } from "@/components/atom";
 import { NodeOrganizations } from "./components/NodeOrganizations";
 
 export const loader: LoaderFunction = async ({ params, request, context }) => {
+  const id = params.id ?? "1"
   const requestOptions: RequestOptions<
     FindManyOrganizationWithPageneQueryVariables,
     FindManyOrganizationWithPageneQuery

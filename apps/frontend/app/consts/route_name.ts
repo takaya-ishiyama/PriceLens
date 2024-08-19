@@ -1,4 +1,4 @@
 export const RouteName = {
-  top: '/top',
+  top: (page: string) => `/top/${page}`,
   organization: (id: string) => `/organization/${id}`,
 }
