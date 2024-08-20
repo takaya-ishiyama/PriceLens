@@ -199,58 +199,121 @@ impl OrganizationRepository for OrganizationRepositoryImpl {
         let mut tx = conn.begin().await.unwrap();
 
         // afterをbeforeはどちらかしか来ないからdate = match(first, last)とかでいいかも。その場合after,beforeのハンドリングも考える
-        let after_date = match after {
-            Some(after) => {
-                let date = NaiveDateTime::parse_from_str(&after, "%Y/%m/%d %H:%M:%S");
-                match date {
-                    Ok(date) => date,
-                    Err(e) => return Err(e.to_string()),
+        let after_cursor = match after {
+            Some(_after) => {
+                let tmp = Uuid::parse_str(&_after);
+                match tmp {
+                    Ok(tmp) => tmp,
+                    Err(_) => Uuid::nil(),
                 }
             }
-            None => {
-                NaiveDateTime::parse_from_str("1970/01/01 00:00:00", "%Y/%m/%d %H:%M:%S").unwrap()
-            }
+            None => Uuid::nil(),
         };
 
-        let before_date = match before {
-            Some(before) => {
-                let date = NaiveDateTime::parse_from_str(&before, "%Y/%m/%d %H:%M:%S");
-                match date {
-                    Ok(date) => date,
-                    Err(e) => return Err(e.to_string()),
+        let before_cursor = match before {
+            Some(_before) => {
+                let tmp = Uuid::parse_str(&_before);
+                match tmp {
+                    Ok(tmp) => tmp,
+                    Err(_) => Uuid::nil(),
                 }
             }
-            None => {
-                NaiveDateTime::parse_from_str("1970/01/01 00:00:00", "%Y/%m/%d %H:%M:%S").unwrap()
-            }
+            None => Uuid::nil(),
         };
 
         // ulidにしたほうがいいかも。だるい
         let onzs = match (first, last) {
             (Some(first), _) => {
-                let found_ogn = sqlx::query_as!(
-                    FindManyOrganization,
-                    r#"SELECT id,name,organization_type AS "organization_type!: OrganizationType" FROM organization WHERE created_at > $1 ORDER BY created_at DESC LIMIT 10"#,
-                    after_date,
-                    // first // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
-                ).fetch_all(&mut *tx).await;
+                if after_cursor.is_nil() {
+                    let found_ogn = sqlx::query_as!(
+                        FindManyOrganization,
+                        r#"
+                            SELECT
+                              id,name,organization_type AS "organization_type!: OrganizationType" 
+                              FROM organization 
+                              ORDER BY created_at DESC 
+                              LIMIT 10;
+                        "# // first // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
+                    )
+                    .fetch_all(&mut *tx)
+                    .await;
 
-                match found_ogn {
-                    Ok(ogn) => ogn,
-                    Err(e) => return Err(e.to_string()),
+                    match found_ogn {
+                        Ok(ogn) => ogn,
+                        Err(e) => return Err(e.to_string()),
+                    }
+                } else {
+                    let found_ogn = sqlx::query_as!(
+                        FindManyOrganization,
+                        r#"
+                    SELECT
+                      id,name,organization_type AS "organization_type!: OrganizationType" 
+                      FROM organization 
+                      WHERE created_at > (
+                        SELECT created_at
+                        FROM organization
+                        WHERE id = $1
+                      ) 
+                      ORDER BY created_at DESC 
+                      LIMIT 10;
+                    "#,
+                        after_cursor,
+                        // first // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
+                    )
+                    .fetch_all(&mut *tx)
+                    .await;
+
+                    match found_ogn {
+                        Ok(ogn) => ogn,
+                        Err(e) => return Err(e.to_string()),
+                    }
                 }
             }
             (None, Some(last)) => {
-                let found_ogn = sqlx::query_as!(
-                    FindManyOrganization,
-                    r#"SELECT id,name,organization_type AS "organization_type!: OrganizationType" FROM organization WHERE created_at < $1 ORDER BY created_at DESC LIMIT 10"#,
-                    before_date,
-                    // last // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
-                ).fetch_all(&mut *tx).await;
+                if before_cursor.is_nil() {
+                    let found_ogn = sqlx::query_as!(
+                        FindManyOrganization,
+                        r#"
+                    SELECT
+                      id,name,organization_type AS "organization_type!: OrganizationType" 
+                      FROM organization 
+                      ORDER BY created_at ASC 
+                      LIMIT 10;
+                    "#,
+                        // last // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
+                    )
+                    .fetch_all(&mut *tx)
+                    .await;
 
-                match found_ogn {
-                    Ok(ogn) => ogn,
-                    Err(e) => return Err(e.to_string()),
+                    match found_ogn {
+                        Ok(ogn) => ogn,
+                        Err(e) => return Err(e.to_string()),
+                    }
+                } else {
+                    let found_ogn = sqlx::query_as!(
+                        FindManyOrganization,
+                        r#"
+                    SELECT
+                      id,name,organization_type AS "organization_type!: OrganizationType" 
+                      FROM organization 
+                      WHERE created_at < (
+                        SELECT created_at
+                        FROM organization
+                        WHERE id = $1
+                      ) 
+                      ORDER BY created_at ASC 
+                      LIMIT 10;
+                    "#,
+                        before_cursor,
+                        // last // limitをフロントから受け付ける場合のみ。とりま固定値でいいや
+                    )
+                    .fetch_all(&mut *tx)
+                    .await;
+
+                    match found_ogn {
+                        Ok(ogn) => ogn,
+                        Err(e) => return Err(e.to_string()),
+                    }
                 }
             }
             (None, None) => Vec::new(),

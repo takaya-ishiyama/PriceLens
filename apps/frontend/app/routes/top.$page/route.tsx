@@ -17,7 +17,7 @@ import { Input } from "@/components/atom";
 import { NodeOrganizations } from "./components/NodeOrganizations";
 
 export const loader: LoaderFunction = async ({ params, request, context }) => {
-  const id = params.id ?? "1"
+  const page = params.page ? Number(params.id) : 1
   const requestOptions: RequestOptions<
     FindManyOrganizationWithPageneQueryVariables,
     FindManyOrganizationWithPageneQuery
