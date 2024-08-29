@@ -3,7 +3,7 @@ import type React from "react";
 import { Controller, type FieldValues, type UseControllerProps } from "react-hook-form";
 
 type InputProps = React.ComponentProps<typeof Input>;
-type ErrorProps = {};
+type ErrorProps = {}; //FIXME: 直す
 
 type OmitForInputWithRHF = Omit<InputProps, "value" | "onChange" | "onBlur">;
 

@@ -1,7 +1,0 @@
-mutation createOrganization($name: String!, $organizationType:String!, $privateKey: String) {
-  createOrganization(name: $name, organizationType: $organizationType, privateKey:$privateKey) {
-    id,
-    name,
-    organizationType
-  }
-}

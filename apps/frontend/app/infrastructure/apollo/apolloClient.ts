@@ -1,13 +1,12 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 
-// require('dotenv').config()
+require('dotenv').config()
 
 
-// const BACKEND_URL = process.env.BACKEND_URI;
-const BACKEND_URL = 'http://localhost:8080/graphql';
+const BACKEND_URI = process.env.BACKEND_URI || '';
 
 const apolloClient = new ApolloClient({
-  uri: BACKEND_URL,
+  uri: BACKEND_URI,
   cache: new InMemoryCache(),
 });
 export default apolloClient

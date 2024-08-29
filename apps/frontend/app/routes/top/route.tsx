@@ -2,7 +2,7 @@
 
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { RouteName } from "app/consts/route_name";
-import React from "react";
+import React, { useCallback } from "react";
 import { useCreateOrganization } from "./hooks/useCreateOrganization";
 import { Button } from "@/components/ui/button";
 import { InputWithRHF } from "@/components/molecule/Input/InputWithRHF";
@@ -18,13 +18,13 @@ import { client } from "app/infrastructure/graphql-request";
 import { Input } from "@/components/atom";
 import { NodeOrganizations } from "./components/NodeOrganizations";
 
-export const loader: LoaderFunction = async ({ params, request, context }) => {
+const getOrganizations = async (after?: string) => {
   const requestOptions: RequestOptions<
     FindManyOrganizationWithPageneQueryVariables,
     FindManyOrganizationWithPageneQuery
   > = {
     document: FindManyOrganizationWithPageneDocument,
-    variables: { first: 10 },
+    variables: { first: 10, after },
   };
   try {
     const { organizationFindAllWithPagenate } =
@@ -34,6 +34,10 @@ export const loader: LoaderFunction = async ({ params, request, context }) => {
     console.log("エラーはっせい！！");
     throw new Error((e as Error).message);
   }
+};
+
+export const loader: LoaderFunction = async () => {
+  return getOrganizations();
 };
 
 const TopScreen = () => {
@@ -54,19 +58,34 @@ const TopScreen = () => {
     [handleSubmitWithRHF, handleSubmitCreateOrganization],
   );
 
+  // FIXME: パラメータ変えて利フェッチ方法が見つからなかった
   const { nodes, pageInfo } =
     useLoaderData<
       FindManyOrganizationWithPageneQuery["organizationFindAllWithPagenate"]
     >();
 
-  // 今のところ使っていない
-  // const handleClickGoToOrganization = React.useCallback(
-  //   (organizationId: string) => {
-  //     if (organizationId === null) return;
-  //     navigate(RouteName.organization(organizationId));
-  //   },
-  //   [navigate],
-  // );
+  const [ognzInfo, setOgnzInfo] =
+    React.useState<
+      FindManyOrganizationWithPageneQuery["organizationFindAllWithPagenate"]
+    >({ nodes, pageInfo });
+  const [after, setAfter] = React.useState<string | undefined>(nodes.at(-1)?.id);
+
+  // // 初回読み込み
+  // React.useEffect(() => {
+  //   getOrganizations({})
+  //     .then((res) => {
+  //       setOgnzInfo(res);
+  //       setAfter(res.nodes.at(-1)?.id);
+  //     })
+  // }, []);
+
+
+  const handleClickGetNextOgnz = useCallback(async () => {
+    const ognz = await getOrganizations(after);
+    setOgnzInfo(ognz);
+    if (ognz.nodes.at(-1)?.id)
+      setAfter(ognz.nodes.at(-1)?.id);
+  }, [after]);
 
   return (
     <div>
@@ -80,7 +99,7 @@ const TopScreen = () => {
         <Input />
         <Button>検索</Button>
       </div>
-      <NodeOrganizations nodes={nodes} />
+      <NodeOrganizations onClickGotoNextPage={handleSubmit} nodes={ognzInfo.nodes} />
     </div>
   );
 };
