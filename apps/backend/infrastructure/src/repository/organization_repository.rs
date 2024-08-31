@@ -361,28 +361,28 @@ mod tests {
         Ok(())
     }
 
-    // #[sqlx::test]
-    // async fn test_find_one(pool: PgPool) -> sqlx::Result<()> {
-    //     setup_database(&pool).await;
-    //     let stb = stb_organization();
-    //     let db = Arc::new(pool);
-    //     let repo = OrganizationRepositoryImpl::new(db);
+    #[sqlx::test]
+    async fn test_find_one(pool: PgPool) -> sqlx::Result<()> {
+        setup_database(&pool).await;
+        let stb = stb_organization();
+        let db = Arc::new(pool);
+        let repo = OrganizationRepositoryImpl::new(db);
 
-    //     sqlx::query!(
-    //         r#"
-    //         INSERT INTO organization (id, name, organization_type, created_at, updated_at)
-    //         VALUES ('17b5ac0c-1429-469a-8522-053f7bf0f80d','名無しの組織', 'PUBLIC', '2021-09-01 00:00:00', '2021-09-01 00:00:00')
-    //         "#
-    //     );
+        // sqlx::query!(
+        //     r#"
+        //     INSERT INTO organization (id, name, organization_type, created_at, updated_at)
+        //     VALUES ('17b5ac0c-1429-469a-8522-053f7bf0f80d','名無しの組織', 'PUBLIC', '2021-09-01 00:00:00', '2021-09-01 00:00:00')
+        //     "#
+        // );
 
-    //     // let organization = repo.find_one_by_id(&stb[0].get_params().id).await.unwrap();
-    //     let organization = repo
-    //         .find_one_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d")
-    //         .await
-    //         .unwrap();
+        // let organization = repo.find_one_by_id(&stb[0].get_params().id).await.unwrap();
+        let organization = repo
+            .find_one_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d")
+            .await
+            .unwrap();
 
-    //     assert_eq!(organization.get_params().name, stb[0].get_params().id);
+        assert_eq!(organization.get_params().id, stb[0].get_params().id);
 
-    //     Ok(())
-    // }
+        Ok(())
+    }
 }
