@@ -35,10 +35,7 @@ mod tests {
         let db = Arc::new(pool);
         let repo = OrganizationRepositoryImpl::new(db);
 
-        let organization = repo
-            .find_one_by_id("17b5ac0c-1429-469a-8522-053f7bf0f80d")
-            .await
-            .unwrap();
+        let organization = repo.find_one_by_id(&stb[0].get_params().id).await.unwrap();
 
         assert_eq!(organization.get_params().id, stb[0].get_params().id);
 
