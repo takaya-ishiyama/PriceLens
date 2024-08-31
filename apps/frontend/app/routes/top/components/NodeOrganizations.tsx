@@ -6,11 +6,13 @@ import type { FindManyOrganizationWithPageneQuery } from "app/infrastructure/gra
 type Props = {
   nodes: FindManyOrganizationWithPageneQuery["organizationFindAllWithPagenate"]["nodes"];
   onClickGotoNextPage: () => void;
+  onClickGotoPrevPage: () => void;
 };
 
 export const NodeOrganizations: React.FC<Props> = ({
   nodes,
   onClickGotoNextPage,
+  onClickGotoPrevPage
 }) => {
   return (
     <div>
@@ -23,8 +25,12 @@ export const NodeOrganizations: React.FC<Props> = ({
           </div>
         ))}
       </div>
+      <Button onClick={onClickGotoPrevPage}>
+        <div>{"前のページへ"}</div>
+      </Button>
+
       <Button onClick={onClickGotoNextPage}>
-        <div>{"次のページへaaaaah"}</div>
+        <div>{"次のページへ"}</div>
       </Button>
     </div>
   );
