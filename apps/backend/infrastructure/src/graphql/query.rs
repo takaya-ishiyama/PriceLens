@@ -106,4 +106,17 @@ impl Query {
 
         Ok(connection)
     }
+
+    // async fn find_organization_with_items<'ctx>(
+    //     &self,
+    //     ctx: &Context<'ctx>,
+    //     #[graphql(desc = "organization_id")] id: String,
+    // ) -> Result<Connection<String, OrganizationSchema, EmptyFields, EmptyFields>, AppError> {
+    //     let db = ctx.data::<DB>().unwrap().0.clone();
+    //     let repo = RepositoryImpls::new(db);
+
+    //     let organization_usecase = OrganizationInteractor::new(&repo);
+
+    //     Ok(connection)
+    // }
 }
