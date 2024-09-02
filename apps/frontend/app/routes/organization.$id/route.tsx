@@ -20,15 +20,15 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  if (params.id == null) return;
-  const requestOptions: RequestOptions<
-    GetOrganizationQueryVariables,
-    GetOrganizationQuery
-  > = {
-    document: GetOrganizationDocument,
-    variables: { id: params.id },
-  };
   try {
+    if (params.id == null) throw new Error("idないよ");
+    const requestOptions: RequestOptions<
+      GetOrganizationQueryVariables,
+      GetOrganizationQuery
+    > = {
+      document: GetOrganizationDocument,
+      variables: { id: params.id },
+    };
     const { organizationFindOne } = await client.request(requestOptions);
     return { organization: organizationFindOne } as OrganizationQuery;
   } catch (e) {
