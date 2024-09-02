@@ -76,7 +76,7 @@
     "typescript-eslint": "^7.15.0"
   },
   "engines": {
-    "node": ">=21.2.0"
+    "node": ">=20.17.0"
   },
   "packageManager": "yarn@4.1.1"
 }
