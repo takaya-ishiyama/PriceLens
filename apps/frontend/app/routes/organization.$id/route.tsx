@@ -8,6 +8,7 @@ import {
   type GetOrganizationQueryVariables,
 } from "app/infrastructure/graphql";
 import { client } from "app/infrastructure/graphql-request";
+import { getEnvironment } from "app/infrastructure/dotenv";
 
 type OrganizationQuery = {
   organization: GetOrganizationQuery["organizationFindOne"];
@@ -21,6 +22,7 @@ export const headers: HeadersFunction = ({ loaderHeaders }) => {
 
 export const loader: LoaderFunction = async ({ params }) => {
   try {
+    const { BACKEND_URI } = getEnvironment()
     if (params.id == null) throw new Error("idないよ");
     const requestOptions: RequestOptions<
       GetOrganizationQueryVariables,
@@ -29,7 +31,7 @@ export const loader: LoaderFunction = async ({ params }) => {
       document: GetOrganizationDocument,
       variables: { id: params.id },
     };
-    const { organizationFindOne } = await client.request(requestOptions);
+    const { organizationFindOne } = await client(BACKEND_URI).request(requestOptions);
     return { organization: organizationFindOne } as OrganizationQuery;
   } catch (e) {
     console.log("エラーはっせい！！");

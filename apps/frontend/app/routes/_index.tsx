@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import type { MetaFunction } from "@remix-run/node";
-import { Link, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { RouteName } from "app/consts/route_name";
+
 
 export const meta: MetaFunction = () => {
   return [{ title: "book recommend" }];
@@ -10,6 +11,8 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const navigate = useNavigate();
   const handleClickNavigateToTop = () => navigate(RouteName.top);
+
+  // const client = useLoaderData();
   return (
     <div>
       <div className={"grid place-content-center"}>

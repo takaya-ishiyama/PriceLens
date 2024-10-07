@@ -15,13 +15,16 @@ import {
 import { client } from "app/infrastructure/graphql-request";
 import { Input } from "@/components/atom";
 import { NodeOrganizations } from "./components/NodeOrganizations";
+import { getEnvironment } from "app/infrastructure/dotenv";
+// import { getEnvironment } from "app/infrastructure/dotenv";
 
 type GetOrganizationsProps = {
+  uri: string
   after?: string;
   before?: string;
 };
 
-const getOrganizations = async ({ after, before }: GetOrganizationsProps) => {
+const getOrganizations = async ({ uri, after, before }: GetOrganizationsProps) => {
   try {
     if ((after !== undefined) && (before !== undefined))
       throw new Error("afterとbeforeは同時に指定できません");
@@ -34,7 +37,7 @@ const getOrganizations = async ({ after, before }: GetOrganizationsProps) => {
     };
 
     const { organizationFindAllWithPagenate } =
-      await client.request(requestOptions);
+      await client(uri).request(requestOptions);
     return organizationFindAllWithPagenate;
   } catch (e) {
     console.log("エラーはっせい！！", (e as Error).message);
@@ -43,7 +46,8 @@ const getOrganizations = async ({ after, before }: GetOrganizationsProps) => {
 };
 
 export const loader: LoaderFunction = async () => {
-  return getOrganizations({});
+  const { BACKEND_URI } = getEnvironment()
+  return getOrganizations({ uri: BACKEND_URI });
 };
 
 const TopScreen = () => {
@@ -76,6 +80,10 @@ const TopScreen = () => {
   const [after, setAfter] = React.useState<string | undefined>(nodes.at(-1)?.id);
   const [before, setBefore] = React.useState<string | undefined>(nodes[0]?.id);
 
+
+  // const { BACKEND_URI } = getEnvironment()//FIXME: actionでやるhttps://localhost:8080/graphql
+  const BACKEND_URI = "http://localhost:8080/graphql"
+
   // // 初回読み込み
   // React.useEffect(() => {
   //   getOrganizations({})
@@ -87,7 +95,7 @@ const TopScreen = () => {
 
   const handleClickGetNextOgnz = useCallback(async () => {
     if (!ognzInfo.pageInfo.hasNextPage) return;
-    const ognz = await getOrganizations({ after });
+    const ognz = await getOrganizations({ after, uri: BACKEND_URI });
     setOgnzInfo(ognz);
     if (ognz.nodes[-1]?.id)
       // nodeの最後のidを取得
@@ -99,7 +107,7 @@ const TopScreen = () => {
 
   const handleClickGetPrevOgnz = useCallback(async () => {
     if (!ognzInfo.pageInfo.hasPreviousPage) return;
-    const ognz = await getOrganizations({ before });
+    const ognz = await getOrganizations({ before, uri: BACKEND_URI });
     setOgnzInfo(ognz);
     if (ognz.nodes.at(-1)?.id)
       // nodeの最後のidを取得
